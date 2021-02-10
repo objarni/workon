@@ -85,6 +85,7 @@ def run_cmd_line(cmd_line, heartbeat_url):
 def http_get(url):
     with urllib.request.urlopen(url) as response:
         html = response.read()
+        print(html)
 
 
 def read_config(path):
