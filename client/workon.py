@@ -4,6 +4,8 @@ import sys
 from pathlib import Path
 import urllib.request
 
+HEARTBEAT_SECONDS = 15
+
 
 def Print(msg):
     return ("Print", msg)
@@ -76,16 +78,22 @@ def run_cmd_line(cmd_line, heartbeat_url):
     while True:
         http_get(heartbeat_url)
         try:
-            process.wait(30)
+            process.wait(HEARTBEAT_SECONDS)
             break
         except subprocess.TimeoutExpired:
-            print("timeout")
+            pass
 
 
 def http_get(url):
     with urllib.request.urlopen(url) as response:
         html = response.read()
-        print(html)
+        import json
+
+        state = json.loads(html)
+        print("\n" * 100 + "** Status **")
+        for (user, proj) in state:
+            print(f"{user} is working on {proj}.")
+        print("\n" * 3)
 
 
 def read_config(path):
