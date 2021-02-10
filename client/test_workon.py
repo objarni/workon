@@ -25,14 +25,14 @@ class TestWorkon(unittest.TestCase):
             )
             self.assertEqual(expected, got)
 
-    def test_creating_config_for_rescue(self):
+    def test_creating_default_config(self):
         expected = [
             workon.CreateFile(
                 "rescue.ini",
                 [
                     "[workon]",
                     "cmdline=subl .",
-                    "server=212.47.253.51:5333",
+                    "server=212.47.253.51:8335",
                     "user=tor",
                 ],
             ),
@@ -54,7 +54,7 @@ class TestWorkon(unittest.TestCase):
                 [
                     "[workon]",
                     "cmdline=subl .",
-                    "server=212.47.253.51:5333",
+                    "server=212.47.253.51:8335",
                     "user=olof",
                 ],
             ),
@@ -96,14 +96,14 @@ class TestWorkon(unittest.TestCase):
                 def read_rescue_ini(path):
                     return {
                         "cmdline": cmdline,
-                        "server": "212.47.253.51:5333",
+                        "server": "212.47.253.51:8335",
                         "user": "olof",
                     }
 
                 expected = [
                     workon.Print(f"Working on {projname}. Command line: {cmdline}"),
                     workon.SetHeartbeatUrl(
-                        f"212.47.253.51:5333/olof/workon/{projname}"
+                        f"212.47.253.51:8335/olof/workon/{projname}"
                     ),
                     workon.StartProcess(cmdline.split()),
                 ]

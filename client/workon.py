@@ -45,7 +45,7 @@ def parse(args, user, read_config):
                 [
                     f"[workon]",
                     f"cmdline=subl .",
-                    f"server=212.47.253.51:5333",
+                    f"server=212.47.253.51:8335",
                     f"user={user}",
                 ],
             ),
@@ -57,7 +57,7 @@ def parse(args, user, read_config):
 
     if cfg:
         cmdline = cfg["cmdline"]
-        url = f'http://{cfg["server"]}/{cfg["user"]}/workon/{projname}'
+        url = f'{cfg["server"]}/{cfg["user"]}/workon/{projname}'
         return [
             Print(f"Working on {projname}. Command line: {cmdline}"),
             SetHeartbeatUrl(url),
@@ -76,7 +76,7 @@ def run_cmd_line(cmd_line, heartbeat_url):
     while True:
         http_get(heartbeat_url)
         try:
-            process.wait(5)
+            process.wait(30)
             break
         except subprocess.TimeoutExpired:
             print("timeout")
