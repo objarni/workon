@@ -32,7 +32,7 @@ class TestWorkon(unittest.TestCase):
                 [
                     "[workon]",
                     "cmdline=subl .",
-                    "server=212.47.253.51:8335",
+                    "server=http://212.47.253.51:8335",
                     "user=tor",
                 ],
             ),
@@ -54,7 +54,7 @@ class TestWorkon(unittest.TestCase):
                 [
                     "[workon]",
                     "cmdline=subl .",
-                    "server=212.47.253.51:8335",
+                    "server=http://212.47.253.51:8335",
                     "user=olof",
                 ],
             ),
@@ -96,14 +96,14 @@ class TestWorkon(unittest.TestCase):
                 def read_rescue_ini(path):
                     return {
                         "cmdline": cmdline,
-                        "server": "212.47.253.51:8335",
+                        "server": "http://212.47.253.51:8335",
                         "user": "olof",
                     }
 
                 expected = [
                     workon.Print(f"Working on {projname}. Command line: {cmdline}"),
                     workon.SetHeartbeatUrl(
-                        f"212.47.253.51:8335/olof/workon/{projname}"
+                        f"http://212.47.253.51:8335/olof/workon/{projname}"
                     ),
                     workon.StartProcess(cmdline.split()),
                 ]

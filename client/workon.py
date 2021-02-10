@@ -45,7 +45,7 @@ def parse(args, user, read_config):
                 [
                     f"[workon]",
                     f"cmdline=subl .",
-                    f"server=212.47.253.51:8335",
+                    f"server=http://212.47.253.51:8335",
                     f"user={user}",
                 ],
             ),
