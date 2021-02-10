@@ -2,6 +2,42 @@ import subprocess
 import sys
 
 
+def Print(msg):
+    return ("Print", msg)
+
+
+def CreateFile(path, lines):
+    return ("CreateFile", lines)
+
+
+def parse(args, read_config, get_user_input):
+    effect = [
+        Print("Did not find '~/rescue.txt'."),
+        Print("Do you want to create it? [y/N]"),
+    ]
+    if "y" in get_user_input().lower():
+        effect.extend(
+            [
+                CreateFile(
+                    "~/rescue.txt",
+                    [
+                        "[workon]",
+                        "cmdline=subl ~/path-to-rescue",
+                        "server=212.47.253.51:5333",
+                        "username=olof",
+                        "projname=rescue",
+                    ],
+                ),
+                Print("'~/rescue.txt' created, open it in"),
+                Print("in you favorite editor to configure,"),
+                Print("then type workon rescue once again!"),
+            ]
+        )
+    else:
+        effect.extend([Print("OK.")])
+    return effect
+
+
 def main(cmd_line):
     editor_process = subprocess.Popen(cmd_line)
     while True:
@@ -9,13 +45,13 @@ def main(cmd_line):
             editor_process.wait(1)
             break
         except subprocess.TimeoutExpired:
-            print('timeout')
+            print("timeout")
     print("Samuel <3")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])
-'''
+"""
     workon rescue
 
 .. skulle jag vilja kunna skriva i en terminal. Då ska följande ske:
@@ -36,4 +72,4 @@ minimalt och diskret tray-UI, men nu är det MVP vi pratar om ....
 
 Du och Tor skulle vara de första jag lägger till i min friend-list!
 
-'''
+"""
