@@ -2,6 +2,7 @@ import configparser
 import subprocess
 import sys
 from pathlib import Path
+import urllib.request
 
 
 def Print(msg):
@@ -16,19 +17,26 @@ def StartProcess(cmd_line):
     return ("StartProcess", cmd_line)
 
 
-def parse(args, read_config):
+def SetHeartbeatUrl(url):
+    return ("SetHeartbeatUrl", url)
+
+
+def parse(args, user, read_config):
 
     if len(args) == 0:
         return [Print("Usage: python3 workon.py <projname>")]
 
+    projname = args[0]
+    inifile = f"{projname}.ini"
+    cfg = read_config(inifile)
+
     if "--create" in args:
         args.remove("--create")
+
         if len(args) == 0:
             return [Print("Create what? --create by itself makes no sense...")]
 
-        projname = args[0]
-        inifile = f"{projname}.ini"
-        if read_config(projname):
+        if cfg:
             return [Print(f"Cannot create {inifile}: file already exists!")]
 
         return [
@@ -38,7 +46,7 @@ def parse(args, read_config):
                     f"[workon]",
                     f"cmdline=subl .",
                     f"server=212.47.253.51:5333",
-                    f"username=olof",
+                    f"user={user}",
                 ],
             ),
             Print(f"'{inifile}' created."),
@@ -47,48 +55,58 @@ def parse(args, read_config):
             Print(f"again to begin samkoding!"),
         ]
 
+    if cfg:
+        cmdline = cfg["cmdline"]
+        url = f'http://{cfg["server"]}/{cfg["user"]}/workon/{projname}'
+        return [
+            Print(f"Working on {projname}. Command line: {cmdline}"),
+            SetHeartbeatUrl(url),
+            StartProcess(cmdline.split()),
+        ]
     else:
-        projname = args[0]
-        inifile = f"{projname}.ini"
-        cfg = read_config(inifile)
-        if not cfg:
-            return [
-                Print(
-                    f"Did not find '{inifile}'. Re-run with flag --create to create a default!"
-                )
-            ]
-        else:
-            cmdline = cfg["cmdline"]
-            return [
-                Print(f"Working on {projname}. Command line: {cmdline}"),
-                StartProcess(cmdline.split()),
-            ]
+        return [
+            Print(
+                f"Did not find '{inifile}'. Re-run with flag --create to create a default!"
+            )
+        ]
 
 
-def run_cmd_line(cmd_line):
+def run_cmd_line(cmd_line, heartbeat_url):
     process = subprocess.Popen(cmd_line)
     while True:
+        http_get(heartbeat_url)
         try:
-            process.wait(1)
+            process.wait(5)
             break
         except subprocess.TimeoutExpired:
             print("timeout")
 
 
+def http_get(url):
+    with urllib.request.urlopen(url) as response:
+        html = response.read()
+
+
 def read_config(path):
-    config = configparser.ConfigParser()
-    config.read(path)
-    return config["workon"]
+    try:
+        config = configparser.ConfigParser()
+        config.read(path)
+        return config["workon"]
+    except:
+        return None
 
 
 if __name__ == "__main__":
-    effects = parse(args=sys.argv[1:], read_config=read_config)
+    effects = parse(args=sys.argv[1:], user="olof", read_config=read_config)
     for effect in effects:
         name, args = effect
         if name == "Print":
             print(args)
         if name == "CreateFile":
             path, lines = args
-            Path(path).write_text("\n".join(lines))
+            Path(path).write_text("\n".join(lines) + "\n")
         if name == "StartProcess":
-            run_cmd_line(args)
+            run_cmd_line(args, url)
+        if name == "SetHeartbeatUrl":
+            url = args
+            print("Setting heartbeat-url to " + url)

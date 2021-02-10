@@ -20,7 +20,9 @@ class TestWorkon(unittest.TestCase):
             ]
 
             cmd_line = [projname]
-            got = workon.parse(cmd_line, read_config=config_does_not_exist_reader)
+            got = workon.parse(
+                cmd_line, user="olof", read_config=config_does_not_exist_reader
+            )
             self.assertEqual(expected, got)
 
     def test_creating_config_for_rescue(self):
@@ -31,7 +33,7 @@ class TestWorkon(unittest.TestCase):
                     "[workon]",
                     "cmdline=subl .",
                     "server=212.47.253.51:5333",
-                    "username=olof",
+                    "user=tor",
                 ],
             ),
             workon.Print("'rescue.ini' created."),
@@ -40,7 +42,9 @@ class TestWorkon(unittest.TestCase):
             workon.Print("again to begin samkoding!"),
         ]
         cmd_line = ["rescue", "--create"]
-        got = workon.parse(cmd_line, read_config=config_does_not_exist_reader)
+        got = workon.parse(
+            cmd_line, user="tor", read_config=config_does_not_exist_reader
+        )
         self.assertEqual(expected, got)
 
     def test_creating_config_for_polarbear(self):
@@ -51,7 +55,7 @@ class TestWorkon(unittest.TestCase):
                     "[workon]",
                     "cmdline=subl .",
                     "server=212.47.253.51:5333",
-                    "username=olof",
+                    "user=olof",
                 ],
             ),
             workon.Print("'polarbear.ini' created."),
@@ -60,25 +64,29 @@ class TestWorkon(unittest.TestCase):
             workon.Print("again to begin samkoding!"),
         ]
         cmd_line = ["polarbear", "--create"]
-        got = workon.parse(cmd_line, read_config=config_does_not_exist_reader)
+        got = workon.parse(
+            cmd_line, user="olof", read_config=config_does_not_exist_reader
+        )
         self.assertEqual(expected, got)
 
     def test_no_args(self):
         expected = [workon.Print("Usage: python3 workon.py <projname>")]
         cmd_line = []
-        got = workon.parse(cmd_line, read_config=config_does_not_exist_reader)
+        got = workon.parse(
+            cmd_line, user="olof", read_config=config_does_not_exist_reader
+        )
         self.assertEqual(expected, got)
 
     def test_create_flag_when_file_exists_prints_error(self):
         expected = [workon.Print("Cannot create rescue.ini: file already exists!")]
         cmd_line = ["rescue", "--create"]
-        got = workon.parse(cmd_line, read_config=config_exists_reader)
+        got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
         self.assertEqual(expected, got)
 
     def test_create_flag_but_no_projname_is_error(self):
         expected = [workon.Print("Create what? --create by itself makes no sense...")]
         cmd_line = ["--create"]
-        got = workon.parse(cmd_line, read_config=config_exists_reader)
+        got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
         self.assertEqual(expected, got)
 
     def test_green_path(self):
@@ -89,14 +97,17 @@ class TestWorkon(unittest.TestCase):
                     return {
                         "cmdline": cmdline,
                         "server": "212.47.253.51:5333",
-                        "username": "olof",
+                        "user": "olof",
                     }
 
                 expected = [
                     workon.Print(f"Working on {projname}. Command line: {cmdline}"),
+                    workon.SetHeartbeatUrl(
+                        f"212.47.253.51:5333/olof/workon/{projname}"
+                    ),
                     workon.StartProcess(cmdline.split()),
                 ]
-                got = workon.parse([projname], read_config=read_rescue_ini)
+                got = workon.parse([projname], user="olof", read_config=read_rescue_ini)
                 self.assertEqual(expected, got)
 
 
