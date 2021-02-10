@@ -16,7 +16,7 @@ Istället skulle vi vilja att man kan se varandras status "någonstans" när man
 ### Hur kör man klienten?
 
 	cd client
-	python3 client.py <projektnamn>
+	python3 workon.py <projektnamn>
 
 Följ sedan instruktionerna!
 
