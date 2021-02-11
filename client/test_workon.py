@@ -31,7 +31,7 @@ class TestWorkon(unittest.TestCase):
                 "rescue.ini",
                 [
                     "[workon]",
-                    "cmdline=subl .",
+                    "cmdline=goland '/path/to the/project'",
                     "server=http://212.47.253.51:8335",
                     "user=tor",
                 ],
@@ -53,7 +53,7 @@ class TestWorkon(unittest.TestCase):
                 "polarbear.ini",
                 [
                     "[workon]",
-                    "cmdline=subl .",
+                    "cmdline=goland '/path/to the/project'",
                     "server=http://212.47.253.51:8335",
                     "user=olof",
                 ],

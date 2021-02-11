@@ -1,7 +1,8 @@
+from pathlib import Path
 import configparser
+import shlex
 import subprocess
 import sys
-from pathlib import Path
 import urllib.request
 
 HEARTBEAT_SECONDS = 15
@@ -46,7 +47,7 @@ def parse(args, user, read_config):
                 inifile,
                 [
                     f"[workon]",
-                    f"cmdline=subl .",
+                    f"cmdline=goland '/path/to the/project'",
                     f"server=http://212.47.253.51:8335",
                     f"user={user}",
                 ],
@@ -63,7 +64,7 @@ def parse(args, user, read_config):
         return [
             Print(f"Working on {projname}. Command line: {cmdline}"),
             SetHeartbeatUrl(url),
-            StartProcess(cmdline.split()),
+            StartProcess(shlex.split(cmdline)),
         ]
     else:
         return [
@@ -74,9 +75,8 @@ def parse(args, user, read_config):
 
 
 def run_cmd_line(cmd_line, heartbeat_url):
-    import shlex
 
-    process = subprocess.Popen(shlex.split(cmd_line))
+    process = subprocess.Popen(cmd_line)
     while True:
         http_get(heartbeat_url)
         try:
