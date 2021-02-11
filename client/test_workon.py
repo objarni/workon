@@ -111,14 +111,30 @@ class TestWorkon(unittest.TestCase):
                 self.assertEqual(expected, got)
 
 
-# test list
-# #no arguments prints usage
-# #file not found, --create not set
-# #file not found, --create set
-# #create flag set but not project name
-# #create flag when file exists prints error
-# green path: starts cmd.line when config exists and --create not set
-# parse error messages: ini file validation?
+import shlex
+
+
+class TestShlex(unittest.TestCase):
+    def test_single(self):
+        self.assertEqual(["goland"], shlex.split("goland"))
+
+    def test_with_a_simple_argument(self):
+        self.assertEqual(
+            ["goland", "/home/olof/rescue"], shlex.split("goland /home/olof/rescue")
+        )
+
+    def test_with_a_quoted_argument(self):
+        self.assertEqual(
+            ["goland", "/home/olof/Rescue On Fractal Bun"],
+            shlex.split('goland "/home/olof/Rescue On Fractal Bun"'),
+        )
+
+    def test_with_two_quoted_arguments_both_quote_kinds(self):
+        self.assertEqual(
+            ["goland", "/home/olof/Rescue On Fractal Bun", "1 2 3"],
+            shlex.split("goland \"/home/olof/Rescue On Fractal Bun\" '1 2 3'"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

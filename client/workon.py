@@ -74,7 +74,9 @@ def parse(args, user, read_config):
 
 
 def run_cmd_line(cmd_line, heartbeat_url):
-    process = subprocess.Popen(cmd_line)
+    import shlex
+
+    process = subprocess.Popen(shlex.split(cmd_line))
     while True:
         http_get(heartbeat_url)
         try:
