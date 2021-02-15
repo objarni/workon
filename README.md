@@ -10,12 +10,15 @@ Jag och min samkodningskompis har diskuterat att man ibland får lust att bygga 
 Istället skulle vi vilja att man kan se varandras status "någonstans" när man börjar bygga. D.v.s varken stör den andre / ger skuld, eller behöver ta steget att fråga "vill du bygga nu?". Lite som hur Steam funkar med friends och "PlayerName is playing GameName" fast för programmering/samkodning!
 
 
+
 ### Hur kör man servern?
 
 
 ### Hur kör man klienten?
 
-	cd client
+   1. Installera Python 3.6+
+   2. Ladda ned "workon.py"
+   3. 
 	python3 workon.py <projektnamn>
 
 Följ sedan instruktionerna!
