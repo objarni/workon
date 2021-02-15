@@ -11,10 +11,6 @@ Istället skulle vi vilja att man kan se varandras status "någonstans" när man
 
 
 ### Installera och köra
-### Hur kör man servern?
-
-
-### Hur kör man klienten?
 
    1. Installera Python 3.6+
    2. Ladda ned "workon.py"
@@ -36,6 +32,10 @@ Följ sedan instruktionerna!
 
 ### Hur kör man klienttesterna?
 
-
     cd client
     python3 test_client.py
+
+
+### Hur kör man servern?
+
+TBD
