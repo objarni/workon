@@ -18,8 +18,9 @@ Istället skulle vi vilja att man kan se varandras status "någonstans" när man
 
    1. Installera Python 3.6+
    2. Ladda ned "workon.py"
-   3. 
-	python3 workon.py <projektnamn>
+   3. I en terminal, skriv sedan:
+
+    python3 workon.py <projektnamn>
 
 Följ sedan instruktionerna!
 
