@@ -1,11 +1,16 @@
-from pathlib import Path
-import configparser
+# Standard
+import json
+import os
 import shlex
 import subprocess
 import sys
 import urllib.request
+from pathlib import Path
 
-HEARTBEAT_SECONDS = 15
+# Local
+import configparser
+
+HEARTBEAT_SECONDS = 5
 
 
 def Print(msg):
@@ -89,13 +94,16 @@ def run_cmd_line(cmd_line, heartbeat_url):
 def http_get(url):
     with urllib.request.urlopen(url) as response:
         html = response.read()
-        import json
-
         state = json.loads(html)
-        print("\n" * 100 + "** Status **")
+        clear()
+        print("** Status **")
         for (user, proj) in state:
             print(f"{user} is working on {proj}.")
-        print("\n" * 3)
+
+
+def clear():
+    cmd = "cls" if os.name == "nt" else "clear"
+    os.system("clear")
 
 
 def read_config(path):
