@@ -13,6 +13,36 @@ import configparser
 HEARTBEAT_SECONDS = 5
 
 
+class Palette:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    ENDC = "\033[0m"
+
+    def underline(self, msg):
+        return f"{self.UNDERLINE}{msg}{self.ENDC}"
+
+    def bold(self, msg):
+        return f"{self.BOLD}{msg}{self.ENDC}"
+
+    def green(self, msg):
+        return f"{self.OKGREEN}{msg}{self.ENDC}"
+
+    def cyan(self, msg):
+        return f"{self.OKCYAN}{msg}{self.ENDC}"
+
+    def blue(self, msg):
+        return f"{self.OKBLUE}{msg}{self.ENDC}"
+
+
+palette = Palette()
+
+
 def Print(msg):
     return ("Print", msg)
 
@@ -96,9 +126,14 @@ def http_get(url):
         html = response.read()
         state = json.loads(html)
         clear()
-        print("** Status **")
+        print(palette.blue(palette.underline("** Status **")))
         for (user, proj) in state:
-            print(f"{user} is working on {proj}.")
+            statusline = (
+                palette.bold(user)
+                + palette.green(" is working on ")
+                + palette.cyan(palette.bold(proj))
+            )
+            print(statusline)
 
 
 def clear():
