@@ -138,7 +138,7 @@ def http_get(url):
 
 def clear():
     cmd = "cls" if os.name == "nt" else "clear"
-    os.system("clear")
+    os.system(cmd)
 
 
 def read_config(path):
