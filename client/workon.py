@@ -122,18 +122,24 @@ def run_cmd_line(cmd_line, heartbeat_url):
 
 
 def http_get(url):
-    with urllib.request.urlopen(url) as response:
-        html = response.read()
-        state = json.loads(html)
-        clear()
-        print(palette.blue(palette.underline("** Status **")))
-        for (user, proj) in state:
-            statusline = (
-                palette.bold(user)
-                + palette.green(" is working on ")
-                + palette.cyan(palette.bold(proj))
-            )
-            print(statusline)
+    try:
+        with urllib.request.urlopen(url) as response:
+            html = response.read()
+            state = json.loads(html)
+            clear()
+            print(palette.blue(palette.underline("** Status **")))
+            for (user, proj) in state:
+                statusline = (
+                    palette.bold(user)
+                    + palette.green(" is working on ")
+                    + palette.cyan(palette.bold(proj))
+                )
+                print(statusline)
+    except ConnectionError:
+        # Ignore network errors; the server may be down some seconds
+        # or other issues - shouldn't stop this script from trying
+        # again. It's just a heart-beat!
+        pass
 
 
 def clear():
