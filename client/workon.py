@@ -5,6 +5,7 @@ import shlex
 import subprocess
 import sys
 import urllib.request
+import urllib.error
 from pathlib import Path
 
 # Local
@@ -135,10 +136,12 @@ def http_get(url):
                     + palette.cyan(palette.bold(proj))
                 )
                 print(statusline)
+    # Ignore network errors; the server may be down some seconds
+    # or other issues - shouldn't stop this script from trying
+    # again. It's just a heart-beat!
     except ConnectionError:
-        # Ignore network errors; the server may be down some seconds
-        # or other issues - shouldn't stop this script from trying
-        # again. It's just a heart-beat!
+        pass
+    except urllib.error.URLError:
         pass
 
 
