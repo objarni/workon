@@ -2,7 +2,7 @@ import json
 import time
 
 from bottle import route, run
-from backend.state import State
+from state import State
 
 state = State()
 

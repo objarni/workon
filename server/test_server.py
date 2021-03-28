@@ -6,7 +6,7 @@
 from approvaltests import verify, verify_as_json
 from approvaltests.reporters import PythonNativeReporter
 
-from backend.state import State
+from state import State
 
 
 def test_adding_client():
