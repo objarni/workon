@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "spago": "spago",
+    "test": "spago test",
+    "lci": "spago test --watch --clear-screen"
+  },
+  "devDependencies": {
+    "purescript": "^0.14.0",
+    "spago": "^0.19.1"
+  }
+}
