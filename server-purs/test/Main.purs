@@ -5,11 +5,14 @@ import Prelude (Unit, discard, ($), (/=), (+), (&&), (>), map, (#))
 import Effect(Effect)
 import Effect.Aff (launchAff_)
 import Data.Array ((:), filter)
+import Data.Maybe (Maybe(..))
 
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Runner (runSpec)
 import Test.Spec.Reporter.Console (consoleReporter)
+import Data.Argonaut.Core (stringify)
+import Data.Argonaut.Encode.Class (encodeJson)
 
 type Heartbeat =
     { alias :: String
@@ -29,6 +32,15 @@ updateState x@{alias, timestamp} xs = x : rest
 
 main :: Effect Unit
 main = launchAff_ $ runSpec [consoleReporter] do
+  describe "json" do
+    it "converts example" do
+        let user = { name: "Tom", age: Just 25 }
+        stringify (encodeJson user)
+            `shouldEqual` "{\"name\":\"Tom\",\"age\":25}"
+    it "converts list" do
+        let dataList = ["a", "b", "c"]
+        stringify (encodeJson dataList)
+            `shouldEqual` "[\"a\",\"b\",\"c\"]"
   describe "Server state" do
     let olofAt5 = { alias: "olof"
                   , workingon: "rescue"
@@ -60,15 +72,15 @@ main = launchAff_ $ runSpec [consoleReporter] do
             `shouldEqual` [["olof", "rescue"]]
         getWorkingClients [olofAt5, sameAt6]
             `shouldEqual` [["olof", "rescue"], ["samuel", "purescript-intellij"]]
+    it "converts to JSON" do
+        convertToJson [olofAt5] `shouldEqual` "[[\"olof\",\"rescue\"]]"
 
 getWorkingClients :: State -> Array (Array String)
 getWorkingClients = map item
     where item r = [r.alias, r.workingon]
 
-{-
-def test_get_working_clients():
-    state = State()
-    state.add_client('Olof', 'rescue', timestamp=5)
-    state.add_client('Tor', 'polarbear', timestamp=21)
-    verify_as_json(state.get_working_clients(), reporter=PythonNativeReporter())
--}
+convertToJson :: State -> String
+convertToJson state = state
+    # getWorkingClients
+    # encodeJson
+    # stringify
