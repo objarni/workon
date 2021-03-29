@@ -1,38 +1,21 @@
 module Test.Main where
 
-import Prelude (Unit, discard, ($), (/=), (+), (&&), (>), map, (#))
-
+import Data.Maybe (Maybe(..))
 import Effect(Effect)
 import Effect.Aff (launchAff_)
-import Data.Array ((:), filter)
-import Data.Maybe (Maybe(..))
-
+import Prelude (Unit, discard, (#), ($), (+))
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Spec.Runner (runSpec)
 import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (runSpec)
 import Data.Argonaut.Core (stringify)
 import Data.Argonaut.Encode.Class (encodeJson)
+import Main
 
-type Heartbeat =
-    { alias :: String
-    , workingon :: String
-    , timestamp :: Int
-    }
-
-type State = Array Heartbeat
-
-updateState :: Heartbeat -> State -> State
-updateState x@{alias, timestamp} xs = x : rest
-    where
-        ourFilter y = aliasFilter y && timeFilter y
-        aliasFilter y = y.alias /= alias
-        timeFilter y = (y.timestamp + 30) > timestamp
-        rest = filter ourFilter xs
 
 main :: Effect Unit
 main = launchAff_ $ runSpec [consoleReporter] do
-  describe "json" do
+  describe "json library" do
     it "converts example" do
         let user = { name: "Tom", age: Just 25 }
         stringify (encodeJson user)
@@ -74,13 +57,3 @@ main = launchAff_ $ runSpec [consoleReporter] do
             `shouldEqual` [["olof", "rescue"], ["samuel", "purescript-intellij"]]
     it "converts to JSON" do
         convertToJson [olofAt5] `shouldEqual` "[[\"olof\",\"rescue\"]]"
-
-getWorkingClients :: State -> Array (Array String)
-getWorkingClients = map item
-    where item r = [r.alias, r.workingon]
-
-convertToJson :: State -> String
-convertToJson state = state
-    # getWorkingClients
-    # encodeJson
-    # stringify
