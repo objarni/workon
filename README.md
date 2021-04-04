@@ -5,7 +5,7 @@
 
 ## Background
 
-Me and my samkoda friend have been discussing that sometimes you get the urge to build on your project, but do not have the energy to share on WhatsApp, Slack, Discord IRC or wherever you communicate with coding buddies.
+Me and my samkoda friend have been discussing that sometimes you get the urge to build on your project, but do not have the energy to share on WhatsApp, Slack, Discord IRC or wherever you communicate with coding buddies. This is due to both not wanting to potentially interrupt/disturb, but also that it takes energy to write stuff, however small. :)
 
 Instead, we would like to see each others statuses 'somewhere' when you start coding; similar to how the Friends view in Steam works for games! This has some consequences:
 
