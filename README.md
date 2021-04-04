@@ -5,8 +5,6 @@
 
 ## Background
 
-Jag och min samkodningskompis har diskuterat att man ibland får lust att bygga på sitt projekt, men inte "orkar" dela i What'sApp, Slack, Discord eller var man nu kommunicerar.
-
 Me and my samkoda friend have been discussing that sometimes you get the urge to build on your project, but do not have the energy to share on WhatsApp, Slack, Discord IRC or wherever you communicate with coding buddies.
 
 Instead, we would like to see each others statuses 'somewhere' when you start coding; similar to how the Friends view in Steam works for games! This has some consequences:
