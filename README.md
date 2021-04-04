@@ -1,24 +1,32 @@
 # workon
 
-Samkoda (Social coding experiment) MVP
+"Samkoda" - Social coding experiment
 
 
-## Bakgrund
+## Background
 
 Jag och min samkodningskompis har diskuterat att man ibland får lust att bygga på sitt projekt, men inte "orkar" dela i What'sApp, Slack, Discord eller var man nu kommunicerar.
 
-Istället skulle vi vilja att man kan se varandras status "någonstans" när man börjar bygga. D.v.s varken stör den andre / ger skuld, eller behöver ta steget att fråga "vill du bygga nu?". Lite som hur Steam funkar med friends och "PlayerName is playing GameName" fast för programmering/samkodning!
+Me and my samkoda friend have been discussing that sometimes you get the urge to build on your project, but do not have the energy to share on WhatsApp, Slack, Discord IRC or wherever you communicate with coding buddies.
+
+Instead, we would like to see each others statuses 'somewhere' when you start coding; similar to how the Friends view in Steam works for games! This has some consequences:
+
+1) It will not disturb/interrupt anyone
+2) There is no energy loss having to type 'do you want to code some with me now?'
 
 
-### Installera och köra
+### Install and run client
 
-   1. Installera Python 3.6+
-   2. Ladda ned "client/workon.py"
-   3. I en terminal, skriv sedan:
+   1. Make sure you have Python 3.6+ available
+   2. Download "client/workon.py"
+   3. In a terminal, write:
 
-    python3 workon.py <projektnamn>
+    python3 workon.py <projectname>
 
-Följ sedan instruktionerna!
+Then follow instructions!
+
+
+### Below untranslated How-to for Windows .bat file
 
 
 ### Hur bygger man en .bat fil som startar ens editor och en PowerShell i projektets .venv?
