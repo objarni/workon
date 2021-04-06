@@ -1,7 +1,6 @@
 module Test.Main where
 
 import Prelude
-
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Test.Spec (describe, it)
@@ -10,54 +9,112 @@ import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
 import Data.Maybe (Maybe(..))
 
-data WorkonEffect = Print String
-type Projectname = String
+data WorkonEffect
+  = Print String
+  | CreateFile String (Array String)
+
+type Projectname
+  = String
 
 instance showWorkonEffect :: Show WorkonEffect where
   show we = case we of
     Print s -> "Print " <> show s
+    CreateFile s lines -> "CreateFile " <> show s <> " " <> show lines
 
 derive instance eqWorkonEffect :: Eq WorkonEffect
 
 parse :: Array String -> String -> (Projectname -> Maybe {}) -> Array WorkonEffect
-parse ["--create"] _ _ = [Print "Create what? --create by itself makes no sense..."]
-parse [projectName] _ _ = [Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!"]
-parse _ _ _ = [Print "Usage: workon <projname>"]
+parse [ "--create" ] _ _ = [ Print "Create what? --create by itself makes no sense..." ]
+
+parse [ projectName, "--create" ] _ _ =
+  [ CreateFile
+      "rescue.ini"
+      [ "[workon]"
+      , "cmdline=goland '/path/to the/project'"
+      , "server=http://212.47.253.51:8335"
+      , "user=samuel"
+      ]
+  , Print "'rescue.ini' created."
+  , Print "Open it with your favorite text editor then type"
+  , Print "   workon rescue"
+  , Print "again to begin samkoding!"
+  ]
+
+parse [ projectName ] _ _ = [ Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!" ]
+
+parse _ _ _ = [ Print "Usage: workon <projname>" ]
 
 main :: Effect Unit
-main = launchAff_ $ runSpec [consoleReporter] do
-  describe "parse" do
-    it "prints usage when missing project name" do
-      let
-        expected = [Print "Usage: workon <projname>"]
-        cmdLine = []
-        user = "olof"
-        readConfig _ = Nothing
-      parse cmdLine user readConfig `shouldEqual` expected
-    it "prints error message when config cannot be found for rescue" do
-      let
-        expected = [Print "Did not find 'rescue.ini'. Re-run with flag --create to create a default!"]
-        cmdLine = ["rescue"]
-        user = "olof"
-        readConfig _ = Nothing
-      parse cmdLine user readConfig `shouldEqual` expected
-    it "prints error message when config cannot be found for polarbear" do
-      let
-        expected = [Print "Did not find 'polarbear.ini'. Re-run with flag --create to create a default!"]
-        cmdLine = ["polarbear"]
-        user = "olof"
-        readConfig _ = Nothing
-      parse cmdLine user readConfig `shouldEqual` expected
-    it "prints error message when user writes create without project name" do
-      let
-        expected = [Print "Create what? --create by itself makes no sense..."]
-        cmdLine = ["--create"]
-        user = "samuel"
-        readConfig _ = Nothing
-      parse cmdLine user readConfig `shouldEqual` expected
+main =
+  launchAff_
+    $ runSpec [ consoleReporter ] do
+        describe "parse" do
+          it "prints usage when missing project name" do
+            let
+              expected = [ Print "Usage: workon <projname>" ]
+
+              cmdLine = []
+
+              user = "olof"
+
+              readConfig _ = Nothing
+            parse cmdLine user readConfig `shouldEqual` expected
+          it "prints error message when config cannot be found for rescue" do
+            let
+              expected = [ Print "Did not find 'rescue.ini'. Re-run with flag --create to create a default!" ]
+
+              cmdLine = [ "rescue" ]
+
+              user = "olof"
+
+              readConfig _ = Nothing
+            parse cmdLine user readConfig `shouldEqual` expected
+          it "prints error message when config cannot be found for polarbear" do
+            let
+              expected = [ Print "Did not find 'polarbear.ini'. Re-run with flag --create to create a default!" ]
+
+              cmdLine = [ "polarbear" ]
+
+              user = "olof"
+
+              readConfig _ = Nothing
+            parse cmdLine user readConfig `shouldEqual` expected
+          it "prints error message when user writes create without project name" do
+            let
+              expected = [ Print "Create what? --create by itself makes no sense..." ]
+
+              cmdLine = [ "--create" ]
+
+              user = "samuel"
+
+              readConfig _ = Nothing
+            parse cmdLine user readConfig `shouldEqual` expected
+          it "writes config file when project name and create flag is supplied" do
+            let
+              expected =
+                [ CreateFile
+                    "rescue.ini"
+                    [ "[workon]"
+                    , "cmdline=goland '/path/to the/project'"
+                    , "server=http://212.47.253.51:8335"
+                    , "user=samuel"
+                    ]
+                , Print "'rescue.ini' created."
+                , Print "Open it with your favorite text editor then type"
+                , Print "   workon rescue"
+                , Print "again to begin samkoding!"
+                ]
+
+              cmdLine = [ "rescue", "--create" ]
+
+              user = "samuel"
+
+              readConfig _ = Nothing
+            parse cmdLine user readConfig `shouldEqual` expected
 
 pythonUnitTest :: String
-pythonUnitTest = """
+pythonUnitTest =
+  """
 {-
 Python unit tests
 
@@ -70,12 +127,6 @@ def config_exists_reader(path):
 
 
 class TestWorkon(unittest.TestCase):
-
-    def test_create_flag_but_no_projname_is_error(self):
-        expected = [workon.Print("Create what? --create by itself makes no sense...")]
-        cmd_line = ["--create"]
-        got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
-        self.assertEqual(expected, got)
 
     def test_creating_default_config(self):
         expected = [

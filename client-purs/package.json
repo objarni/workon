@@ -1,9 +1,11 @@
 {
   "scripts": {
-    "spago": "spago"
+    "spago": "spago",
+    "format": "purty test/Main.purs --write"
   },
   "devDependencies": {
     "purescript": "^0.14.0",
+    "purty": "^7.0.0",
     "spago": "^0.19.2"
   }
 }
