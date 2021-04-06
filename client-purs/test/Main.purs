@@ -9,8 +9,6 @@ import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
-
 
 data WorkonEffect = Print String
 
@@ -19,8 +17,7 @@ instance showWorkonEffect :: Show WorkonEffect where
     Print s -> "Print " <> show s
 
 instance eqWorkonEffect :: Eq WorkonEffect where
-   eq we1 we2 = case Tuple we1 we2 of
-     Tuple (Print s1) (Print s2) -> s1 == s2
+   eq we1 we2 = (show we1) == (show we2)
 
 parse :: Array String -> String -> (String -> Maybe {}) -> Array WorkonEffect
 parse _ _ _ = [Print "Usage: workon <projname>"]
