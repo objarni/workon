@@ -11,6 +11,7 @@ import Test.Spec.Runner (runSpec)
 import Data.Maybe (Maybe(..))
 
 data WorkonEffect = Print String
+type Projectname = String
 
 instance showWorkonEffect :: Show WorkonEffect where
   show we = case we of
@@ -18,13 +19,13 @@ instance showWorkonEffect :: Show WorkonEffect where
 
 derive instance eqWorkonEffect :: Eq WorkonEffect
 
-parse :: Array String -> String -> (String -> Maybe {}) -> Array WorkonEffect
+parse :: Array String -> String -> (Projectname -> Maybe {}) -> Array WorkonEffect
 parse _ _ _ = [Print "Usage: workon <projname>"]
 
 main :: Effect Unit
 main = launchAff_ $ runSpec [consoleReporter] do
-  describe "do nothing" do
-    it "test 1" do
+  describe "parse" do
+    it "prints usage when missing project name" do
       let
         expected = [Print "Usage: workon <projname>"]
         cmdLine = []
@@ -46,13 +47,6 @@ def config_exists_reader(path):
 
 
 class TestWorkon(unittest.TestCase):
-    def test_no_args(self):
-        expected = [workon.Print("Usage: python3 workon.py <projname>")]
-        cmd_line = []
-        got = workon.parse(
-            cmd_line, user="olof", read_config=config_does_not_exist_reader
-        )
-        self.assertEqual(expected, got)
 
     def test_config_not_found(self):
         for projname in ["rescue", "polarbear"]:
