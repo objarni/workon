@@ -20,6 +20,7 @@ instance showWorkonEffect :: Show WorkonEffect where
 derive instance eqWorkonEffect :: Eq WorkonEffect
 
 parse :: Array String -> String -> (Projectname -> Maybe {}) -> Array WorkonEffect
+parse ["--create"] _ _ = [Print "Create what? --create by itself makes no sense..."]
 parse [projectName] _ _ = [Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!"]
 parse _ _ _ = [Print "Usage: workon <projname>"]
 
@@ -47,6 +48,13 @@ main = launchAff_ $ runSpec [consoleReporter] do
         user = "olof"
         readConfig _ = Nothing
       parse cmdLine user readConfig `shouldEqual` expected
+    it "prints error message when user writes create without project name" do
+      let
+        expected = [Print "Create what? --create by itself makes no sense..."]
+        cmdLine = ["--create"]
+        user = "samuel"
+        readConfig _ = Nothing
+      parse cmdLine user readConfig `shouldEqual` expected
 
 pythonUnitTest :: String
 pythonUnitTest = """
@@ -63,19 +71,11 @@ def config_exists_reader(path):
 
 class TestWorkon(unittest.TestCase):
 
-    def test_config_not_found(self):
-        for projname in ["rescue", "polarbear"]:
-            expected = [
-                workon.Print(
-                    f"Did not find '{projname}.ini'. Re-run with flag --create to create a default!"
-                ),
-            ]
-
-            cmd_line = [projname]
-            got = workon.parse(
-                cmd_line, user="olof", read_config=config_does_not_exist_reader
-            )
-            self.assertEqual(expected, got)
+    def test_create_flag_but_no_projname_is_error(self):
+        expected = [workon.Print("Create what? --create by itself makes no sense...")]
+        cmd_line = ["--create"]
+        got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
+        self.assertEqual(expected, got)
 
     def test_creating_default_config(self):
         expected = [
@@ -124,12 +124,6 @@ class TestWorkon(unittest.TestCase):
     def test_create_flag_when_file_exists_prints_error(self):
         expected = [workon.Print("Cannot create rescue.ini: file already exists!")]
         cmd_line = ["rescue", "--create"]
-        got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
-        self.assertEqual(expected, got)
-
-    def test_create_flag_but_no_projname_is_error(self):
-        expected = [workon.Print("Create what? --create by itself makes no sense...")]
-        cmd_line = ["--create"]
         got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
         self.assertEqual(expected, got)
 
