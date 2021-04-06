@@ -20,6 +20,7 @@ instance showWorkonEffect :: Show WorkonEffect where
 derive instance eqWorkonEffect :: Eq WorkonEffect
 
 parse :: Array String -> String -> (Projectname -> Maybe {}) -> Array WorkonEffect
+parse [projectName] _ _ = [Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!"]
 parse _ _ _ = [Print "Usage: workon <projname>"]
 
 main :: Effect Unit
@@ -29,6 +30,20 @@ main = launchAff_ $ runSpec [consoleReporter] do
       let
         expected = [Print "Usage: workon <projname>"]
         cmdLine = []
+        user = "olof"
+        readConfig _ = Nothing
+      parse cmdLine user readConfig `shouldEqual` expected
+    it "prints error message when config cannot be found for rescue" do
+      let
+        expected = [Print "Did not find 'rescue.ini'. Re-run with flag --create to create a default!"]
+        cmdLine = ["rescue"]
+        user = "olof"
+        readConfig _ = Nothing
+      parse cmdLine user readConfig `shouldEqual` expected
+    it "prints error message when config cannot be found for polarbear" do
+      let
+        expected = [Print "Did not find 'polarbear.ini'. Re-run with flag --create to create a default!"]
+        cmdLine = ["polarbear"]
         user = "olof"
         readConfig _ = Nothing
       parse cmdLine user readConfig `shouldEqual` expected
