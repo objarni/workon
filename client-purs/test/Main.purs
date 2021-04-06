@@ -8,6 +8,7 @@ import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
 import Data.Maybe (Maybe(..))
+import Data.Traversable (for_)
 
 data WorkonEffect
   = Print String
@@ -59,26 +60,17 @@ main =
 
               readConfig _ = Nothing
             parse cmdLine user readConfig `shouldEqual` expected
-          it "prints error message when config cannot be found for rescue" do
-            let
-              expected = [ Print "Did not find 'rescue.ini'. Re-run with flag --create to create a default!" ]
+          for_ ["rescue", "polarbear"] \projectName -> do
+              it ("prints error message when config cannot be found for " <> projectName) do
+                let
+                  expected = [ Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!" ]
 
-              cmdLine = [ "rescue" ]
+                  cmdLine = [ projectName ]
 
-              user = "olof"
+                  user = "olof"
 
-              readConfig _ = Nothing
-            parse cmdLine user readConfig `shouldEqual` expected
-          it "prints error message when config cannot be found for polarbear" do
-            let
-              expected = [ Print "Did not find 'polarbear.ini'. Re-run with flag --create to create a default!" ]
-
-              cmdLine = [ "polarbear" ]
-
-              user = "olof"
-
-              readConfig _ = Nothing
-            parse cmdLine user readConfig `shouldEqual` expected
+                  readConfig _ = Nothing
+                parse cmdLine user readConfig `shouldEqual` expected
           it "prints error message when user writes create without project name" do
             let
               expected = [ Print "Create what? --create by itself makes no sense..." ]
