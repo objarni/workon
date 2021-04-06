@@ -16,8 +16,7 @@ instance showWorkonEffect :: Show WorkonEffect where
   show we = case we of
     Print s -> "Print " <> show s
 
-instance eqWorkonEffect :: Eq WorkonEffect where
-   eq we1 we2 = (show we1) == (show we2)
+derive instance eqWorkonEffect :: Eq WorkonEffect
 
 parse :: Array String -> String -> (String -> Maybe {}) -> Array WorkonEffect
 parse _ _ _ = [Print "Usage: workon <projname>"]
