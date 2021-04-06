@@ -8,15 +8,36 @@ import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
+import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple(..))
+
+
+data WorkonEffect = Print String
+
+instance showWorkonEffect :: Show WorkonEffect where
+  show we = case we of
+    Print s -> "Print " <> show s
+
+instance eqWorkonEffect :: Eq WorkonEffect where
+   eq we1 we2 = case Tuple we1 we2 of
+     Tuple (Print s1) (Print s2) -> s1 == s2
+
+parse :: Array String -> String -> (String -> Maybe {}) -> Array WorkonEffect
+parse _ _ _ = [Print "Usage: workon <projname>"]
 
 main :: Effect Unit
 main = launchAff_ $ runSpec [consoleReporter] do
   describe "do nothing" do
     it "test 1" do
-      1 `shouldEqual` 1
+      let
+        expected = [Print "Usage: workon <projname>"]
+        cmdLine = []
+        user = "olof"
+        readConfig _ = Nothing
+      parse cmdLine user readConfig `shouldEqual` expected
 
-s :: String
-s = """
+pythonUnitTest :: String
+pythonUnitTest = """
 {-
 Python unit tests
 
@@ -29,6 +50,14 @@ def config_exists_reader(path):
 
 
 class TestWorkon(unittest.TestCase):
+    def test_no_args(self):
+        expected = [workon.Print("Usage: python3 workon.py <projname>")]
+        cmd_line = []
+        got = workon.parse(
+            cmd_line, user="olof", read_config=config_does_not_exist_reader
+        )
+        self.assertEqual(expected, got)
+
     def test_config_not_found(self):
         for projname in ["rescue", "polarbear"]:
             expected = [
@@ -82,14 +111,6 @@ class TestWorkon(unittest.TestCase):
             workon.Print("again to begin samkoding!"),
         ]
         cmd_line = ["polarbear", "--create"]
-        got = workon.parse(
-            cmd_line, user="olof", read_config=config_does_not_exist_reader
-        )
-        self.assertEqual(expected, got)
-
-    def test_no_args(self):
-        expected = [workon.Print("Usage: python3 workon.py <projname>")]
-        cmd_line = []
         got = workon.parse(
             cmd_line, user="olof", read_config=config_does_not_exist_reader
         )
