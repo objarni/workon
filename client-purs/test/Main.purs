@@ -27,17 +27,18 @@ derive instance eqWorkonEffect :: Eq WorkonEffect
 parse :: Array String -> String -> (Projectname -> Maybe {}) -> Array WorkonEffect
 parse [ "--create" ] _ _ = [ Print "Create what? --create by itself makes no sense..." ]
 
-parse [ projectName, "--create" ] _ _ =
+parse [ "--create", projectName ] username readConfig = parse [projectName, "--create"] username readConfig
+parse [ projectName, "--create" ] username _ =
   [ CreateFile
-      "rescue.ini"
+      (projectName <> ".ini")
       [ "[workon]"
       , "cmdline=goland '/path/to the/project'"
       , "server=http://212.47.253.51:8335"
-      , "user=samuel"
+      , "user=" <> username
       ]
-  , Print "'rescue.ini' created."
+  , Print $ "'" <> projectName <> ".ini' created."
   , Print "Open it with your favorite text editor then type"
-  , Print "   workon rescue"
+  , Print $ "   workon " <> projectName
   , Print "again to begin samkoding!"
   ]
 
@@ -81,28 +82,31 @@ main =
 
               readConfig _ = Nothing
             parse cmdLine user readConfig `shouldEqual` expected
-          it "writes config file when project name and create flag is supplied" do
-            let
-              expected =
-                [ CreateFile
-                    "rescue.ini"
-                    [ "[workon]"
-                    , "cmdline=goland '/path/to the/project'"
-                    , "server=http://212.47.253.51:8335"
-                    , "user=samuel"
-                    ]
-                , Print "'rescue.ini' created."
-                , Print "Open it with your favorite text editor then type"
-                , Print "   workon rescue"
-                , Print "again to begin samkoding!"
-                ]
+          for_ ["samuel", "tor"] \username -> do
+            for_ ["ijpurs", "polarbear"] \projectName -> do
+              for_ [true, false] \reverseCmdLine -> do
+                  it ("writes correct config file for user " <> username <> " project " <> projectName <> " when create flag is supplied") do
+                    let
+                      expected =
+                        [ CreateFile
+                            (projectName <> ".ini")
+                            [ "[workon]"
+                            , "cmdline=goland '/path/to the/project'"
+                            , "server=http://212.47.253.51:8335"
+                            , "user=" <> username
+                            ]
+                        , Print $ "'" <> projectName <> ".ini' created."
+                        , Print "Open it with your favorite text editor then type"
+                        , Print $ "   workon " <> projectName
+                        , Print "again to begin samkoding!"
+                        ]
 
-              cmdLine = [ "rescue", "--create" ]
+                      cmdLine = if reverseCmdLine then [ projectName, "--create" ] else ["--create", projectName]
 
-              user = "samuel"
+                      user = username
 
-              readConfig _ = Nothing
-            parse cmdLine user readConfig `shouldEqual` expected
+                      readConfig _ = Nothing
+                    parse cmdLine user readConfig `shouldEqual` expected
 
 pythonUnitTest :: String
 pythonUnitTest =
@@ -119,28 +123,6 @@ def config_exists_reader(path):
 
 
 class TestWorkon(unittest.TestCase):
-
-    def test_creating_default_config(self):
-        expected = [
-            workon.CreateFile(
-                "rescue.ini",
-                [
-                    "[workon]",
-                    "cmdline=goland '/path/to the/project'",
-                    "server=http://212.47.253.51:8335",
-                    "user=tor",
-                ],
-            ),
-            workon.Print("'rescue.ini' created."),
-            workon.Print("Open it with your favorite text editor then type"),
-            workon.Print("   python3 workon.py rescue"),
-            workon.Print("again to begin samkoding!"),
-        ]
-        cmd_line = ["rescue", "--create"]
-        got = workon.parse(
-            cmd_line, user="tor", read_config=config_does_not_exist_reader
-        )
-        self.assertEqual(expected, got)
 
     def test_creating_config_for_polarbear(self):
         expected = [
