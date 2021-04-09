@@ -136,13 +136,7 @@ def config_exists_reader(path):
 
 class TestWorkon(unittest.TestCase):
 
-    def test_create_flag_when_file_exists_prints_error(self):
-        expected = [workon.Print("Cannot create rescue.ini: file already exists!")]
-        cmd_line = ["rescue", "--create"]
-        got = workon.parse(cmd_line, user="olof", read_config=config_exists_reader)
-        self.assertEqual(expected, got)
-
-    def test_green_path(self):
+    def test_running_script_when_config_exists(self):
         for projname in ["rescue", "polarbear"]:
             for cmdline in ["subl .", "goland"]:
 
