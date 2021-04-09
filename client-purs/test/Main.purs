@@ -28,19 +28,21 @@ parse :: Array String -> String -> (Projectname -> Maybe {}) -> Array WorkonEffe
 parse [ "--create" ] _ _ = [ Print "Create what? --create by itself makes no sense..." ]
 
 parse [ "--create", projectName ] username readConfig = parse [projectName, "--create"] username readConfig
-parse [ projectName, "--create" ] username _ =
-  [ CreateFile
-      (projectName <> ".ini")
-      [ "[workon]"
-      , "cmdline=goland '/path/to the/project'"
-      , "server=http://212.47.253.51:8335"
-      , "user=" <> username
+parse [ projectName, "--create" ] username readConfig =
+  case readConfig projectName of
+    Nothing -> [ CreateFile
+          (projectName <> ".ini")
+          [ "[workon]"
+          , "cmdline=goland '/path/to the/project'"
+          , "server=http://212.47.253.51:8335"
+          , "user=" <> username
+          ]
+      , Print $ "'" <> projectName <> ".ini' created."
+      , Print "Open it with your favorite text editor then type"
+      , Print $ "   workon " <> projectName
+      , Print "again to begin samkoding!"
       ]
-  , Print $ "'" <> projectName <> ".ini' created."
-  , Print "Open it with your favorite text editor then type"
-  , Print $ "   workon " <> projectName
-  , Print "again to begin samkoding!"
-  ]
+    Just _ -> [Print $ "'" <> projectName <> ".ini' already exists, cannot create!"]
 
 parse [ projectName ] _ _ = [ Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!" ]
 
@@ -81,6 +83,16 @@ main =
               user = "samuel"
 
               readConfig _ = Nothing
+            parse cmdLine user readConfig `shouldEqual` expected
+          for_ ["rescue", "polarbear"] \projectName -> it ("prints error message when user tries to create already existing project " <> projectName) do
+            let
+              expected = [ Print $ "'" <> projectName <> ".ini' already exists, cannot create!" ]
+
+              cmdLine = [ "--create", projectName ]
+
+              user = "samuel"
+
+              readConfig _ = Just {}
             parse cmdLine user readConfig `shouldEqual` expected
           for_ ["samuel", "tor"] \username -> do
             for_ ["ijpurs", "polarbear"] \projectName -> do
@@ -123,28 +135,6 @@ def config_exists_reader(path):
 
 
 class TestWorkon(unittest.TestCase):
-
-    def test_creating_config_for_polarbear(self):
-        expected = [
-            workon.CreateFile(
-                "polarbear.ini",
-                [
-                    "[workon]",
-                    "cmdline=goland '/path/to the/project'",
-                    "server=http://212.47.253.51:8335",
-                    "user=olof",
-                ],
-            ),
-            workon.Print("'polarbear.ini' created."),
-            workon.Print("Open it with your favorite text editor then type"),
-            workon.Print("   python3 workon.py polarbear"),
-            workon.Print("again to begin samkoding!"),
-        ]
-        cmd_line = ["polarbear", "--create"]
-        got = workon.parse(
-            cmd_line, user="olof", read_config=config_does_not_exist_reader
-        )
-        self.assertEqual(expected, got)
 
     def test_create_flag_when_file_exists_prints_error(self):
         expected = [workon.Print("Cannot create rescue.ini: file already exists!")]
