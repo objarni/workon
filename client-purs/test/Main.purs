@@ -7,8 +7,13 @@ import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
+import Data.List (fromFoldable, List)
+import Data.Foldable (intercalate)
 import Data.Maybe (Maybe(..))
 import Data.Traversable (for_)
+
+unwords :: Array String -> String
+unwords = intercalate " "
 
 data WorkonEffect
   = Print String
@@ -72,6 +77,11 @@ main :: Effect Unit
 main =
   launchAff_
     $ runSpec [ consoleReporter ] do
+        describe "unwords" do
+          it "concatenates string with a space inbetween" do
+            unwords ["olof", "samuel"] `shouldEqual` "olof samuel"
+            unwords ["olof", "tor"] `shouldEqual` "olof tor"
+
         describe "parse" do
           it "prints usage when missing project name" do
             let
