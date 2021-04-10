@@ -24,10 +24,10 @@ type Config
 
 instance showWorkonEffect :: Show WorkonEffect where
   show we = case we of
-    Print s -> "Print " <> show s
-    CreateFile s lines -> "CreateFile " <> show s <> " " <> show lines
-    SetHeartbeatUrl s -> "SetHeartbeatUrl " <> s
-    StartProcess parts -> "StartProcess" <> show parts
+    Print s -> "\nPrint " <> show s
+    CreateFile s lines -> "\nCreateFile " <> show s <> " " <> show lines
+    SetHeartbeatUrl s -> "\nSetHeartbeatUrl " <> s
+    StartProcess parts -> "\nStartProcess" <> show parts
 
 derive instance eqWorkonEffect :: Eq WorkonEffect
 
