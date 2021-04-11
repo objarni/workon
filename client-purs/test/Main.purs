@@ -153,7 +153,12 @@ main =
 
                 readConfig _ = Nothing
               parse cmdLine user readConfig `shouldEqual` expected
-          for_ [ "rescue", "polarbear" ] \projectName -> do
+          for_
+            ( { username: _, projectName: _, server: _ }
+                <$> [ "olof" ]
+                <*> [ "rescue", "polarbear" ]
+                <*> [ "http://212.47.253.51:8335"  ]
+            ) \{ username, projectName, server } -> do
             it ("running script when config exists for project " <> projectName <> ", user olof") do
               let
                 expected =
