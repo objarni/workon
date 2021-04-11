@@ -7,7 +7,6 @@ import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
-import Data.List (fromFoldable, List)
 import Data.Foldable (intercalate)
 import Data.Maybe (Maybe(..))
 import Data.Traversable (for_)
@@ -37,10 +36,13 @@ instance showWorkonEffect :: Show WorkonEffect where
 derive instance eqWorkonEffect :: Eq WorkonEffect
 
 exampleConfig :: Maybe Config
-exampleConfig =
+exampleConfig = exampleConfigWithServer "http://212.47.253.51:8335"
+
+exampleConfigWithServer :: String -> Maybe Config
+exampleConfigWithServer server =
   Just
     { cmdLine: [ "goland", "rescue" ]
-    , server: "http://212.47.253.51:8335"
+    , server: server
     }
 
 parse :: Array String -> String -> (Projectname -> Maybe Config) -> Array WorkonEffect
@@ -79,9 +81,8 @@ main =
     $ runSpec [ consoleReporter ] do
         describe "unwords" do
           it "concatenates string with a space inbetween" do
-            unwords ["olof", "samuel"] `shouldEqual` "olof samuel"
-            unwords ["olof", "tor"] `shouldEqual` "olof tor"
-
+            unwords [ "olof", "samuel" ] `shouldEqual` "olof samuel"
+            unwords [ "olof", "tor" ] `shouldEqual` "olof tor"
         describe "parse" do
           it "prints usage when missing project name" do
             let
@@ -125,30 +126,33 @@ main =
 
                 readConfig _ = exampleConfig
               parse cmdLine user readConfig `shouldEqual` expected
-          for_ [ "samuel", "tor" ] \username -> do
-            for_ [ "ijpurs", "polarbear" ] \projectName -> do
-              for_ [ true, false ] \reverseCmdLine -> do
-                it ("writes correct config file for user " <> username <> " project " <> projectName <> " when create flag is supplied") do
-                  let
-                    expected =
-                      [ CreateFile
-                          (projectName <> ".ini")
-                          [ "[workon]"
-                          , "cmdline=goland '/path/to the/project'"
-                          , "server=http://212.47.253.51:8335"
-                          ]
-                      , Print $ "'" <> projectName <> ".ini' created."
-                      , Print "Open it with your favorite text editor then type"
-                      , Print $ "   workon " <> projectName
-                      , Print "again to begin samkoding!"
+          for_
+            ( (\username projectName reverseCmdLine -> { username, projectName, reverseCmdLine })
+                <$> [ "samuel", "tor" ]
+                <*> [ "ijpurs", "polarbear" ]
+                <*> [ true, false ]
+            ) \{ username, projectName, reverseCmdLine } -> do
+            it ("writes correct config file for user " <> username <> " project " <> projectName <> " when create flag is supplied") do
+              let
+                expected =
+                  [ CreateFile
+                      (projectName <> ".ini")
+                      [ "[workon]"
+                      , "cmdline=goland '/path/to the/project'"
+                      , "server=http://212.47.253.51:8335"
                       ]
+                  , Print $ "'" <> projectName <> ".ini' created."
+                  , Print "Open it with your favorite text editor then type"
+                  , Print $ "   workon " <> projectName
+                  , Print "again to begin samkoding!"
+                  ]
 
-                    cmdLine = if reverseCmdLine then [ projectName, "--create" ] else [ "--create", projectName ]
+                cmdLine = if reverseCmdLine then [ projectName, "--create" ] else [ "--create", projectName ]
 
-                    user = username
+                user = username
 
-                    readConfig _ = Nothing
-                  parse cmdLine user readConfig `shouldEqual` expected
+                readConfig _ = Nothing
+              parse cmdLine user readConfig `shouldEqual` expected
           for_ [ "rescue", "polarbear" ] \projectName -> do
             it ("running script when config exists for project " <> projectName <> ", user olof") do
               let
