@@ -18,7 +18,13 @@ data WorkonEffect
   = Print String
   | CreateFile String (Array String)
   | SetHeartbeatUrl String
-  | StartProcess (Array String)
+  | StartProcess CommandLine
+
+type CommandLine
+  = Array String
+
+type User
+  = String
 
 type Projectname
   = String
@@ -45,7 +51,7 @@ exampleConfigWithServer server =
     , server: server
     }
 
-parse :: Array String -> String -> (Projectname -> Maybe Config) -> Array WorkonEffect
+parse :: CommandLine -> User -> (Projectname -> Maybe Config) -> Array WorkonEffect
 parse [ "--create" ] _ _ = [ Print "Create what? --create by itself makes no sense..." ]
 
 parse [ "--create", projectName ] username readConfig = parse [ projectName, "--create" ] username readConfig
@@ -88,44 +94,28 @@ main =
             let
               expected = [ Print "Usage: workon <projname>" ]
 
-              cmdLine = []
-
-              user = "olof"
-
               readConfig _ = Nothing
-            parse cmdLine user readConfig `shouldEqual` expected
+            parse ([]::CommandLine) ("olof" :: User) readConfig `shouldEqual` expected
           for_ [ "rescue", "polarbear" ] \projectName -> do
             it ("prints error message when config cannot be found for " <> projectName) do
               let
                 expected = [ Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!" ]
 
-                cmdLine = [ projectName ]
-
-                user = "olof"
-
                 readConfig _ = Nothing
-              parse cmdLine user readConfig `shouldEqual` expected
+              parse ([ projectName ]::CommandLine) ("olof"::User) readConfig `shouldEqual` expected
           it "prints error message when user writes create without project name" do
             let
               expected = [ Print "Create what? --create by itself makes no sense..." ]
 
-              cmdLine = [ "--create" ]
-
-              user = "samuel"
-
               readConfig _ = Nothing
-            parse cmdLine user readConfig `shouldEqual` expected
+            parse [ "--create" ] "samuel" readConfig `shouldEqual` expected
           for_ [ "rescue", "polarbear" ] \projectName ->
             it ("prints error message when user tries to create already existing project " <> projectName) do
               let
                 expected = [ Print $ "'" <> projectName <> ".ini' already exists, cannot create!" ]
 
-                cmdLine = [ "--create", projectName ]
-
-                user = "samuel"
-
                 readConfig _ = exampleConfig
-              parse cmdLine user readConfig `shouldEqual` expected
+              parse ([ "--create", projectName ]::CommandLine) ("samuel"::User) readConfig `shouldEqual` expected
           for_
             ( { username: _, projectName: _, reverseCmdLine: _ }
                 <$> [ "samuel", "tor" ]
@@ -149,15 +139,13 @@ main =
 
                 cmdLine = if reverseCmdLine then [ projectName, "--create" ] else [ "--create", projectName ]
 
-                user = username
-
                 readConfig _ = Nothing
-              parse cmdLine user readConfig `shouldEqual` expected
+              parse cmdLine username readConfig `shouldEqual` expected
           for_
             ( { username: _, projectName: _, server: _ }
                 <$> [ "olof", "samuel" ]
                 <*> [ "rescue", "polarbear" ]
-                <*> [ "http://212.47.253.51:8335", "http://212.47.253.51:8080"  ]
+                <*> [ "http://212.47.253.51:8335", "http://212.47.253.51:8080" ]
             ) \{ username, projectName, server } -> do
             it ("runs client with config: server " <> server <> ", project " <> projectName <> ", user " <> username) do
               let
