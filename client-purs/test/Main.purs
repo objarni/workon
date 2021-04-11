@@ -159,19 +159,19 @@ main =
                 <*> [ "rescue", "polarbear" ]
                 <*> [ "http://212.47.253.51:8335"  ]
             ) \{ username, projectName, server } -> do
-            it ("running script when config exists for project " <> projectName <> ", user olof") do
+            it ("runs client with config: server " <> server <> ", project " <> projectName <> ", user " <> username) do
               let
                 expected =
                   [ Print $ "Working on " <> projectName <> ". Command line: goland rescue"
-                  , SetHeartbeatUrl $ "http://212.47.253.51:8335/olof/workon/" <> projectName
+                  , SetHeartbeatUrl $ server <> "/" <> username <> "/workon/" <> projectName
                   , StartProcess [ "goland", "/home/olof/github/rescue" ]
                   ]
 
                 cmdLine = [ projectName ]
 
-                user = "olof"
+                user = username
 
-                readConfig _ = exampleConfig
+                readConfig _ = exampleConfigWithServer server
               parse cmdLine user readConfig `shouldEqual` expected
 
 pythonUnitTest :: String
