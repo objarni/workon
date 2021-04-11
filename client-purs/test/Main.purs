@@ -167,49 +167,7 @@ main =
                   , StartProcess [ "goland", "/path/to/my project/" ]
                   ]
 
-                cmdLine = [ projectName ]
-
-                user = username
-
                 readConfig _ = exampleConfigWithServer server
-              parse cmdLine user readConfig `shouldEqual` expected
+              parse [ projectName ] username readConfig `shouldEqual` expected
 
-pythonUnitTest :: String
-pythonUnitTest =
-  """
-{-
-Python unit tests
-
-def config_does_not_exist_reader(path):
-    return None
-
-
-def config_exists_reader(path):
-    return {"hejsan": 5}
-
-
-class TestWorkon(unittest.TestCase):
-
-    def test_running_script_when_config_exists(self):
-        for projname in ["rescue", "polarbear"]:
-            for cmdline in ["subl .", "goland"]:
-
-                def read_rescue_ini(path):
-                    return {
-                        "cmdline": cmdline,
-                        "server": "http://212.47.253.51:8335",
-                        "user": "olof",
-                    }
-
-                expected = [
-                    workon.Print(f"Working on {projname}. Command line: {cmdline}"),
-                    workon.SetHeartbeatUrl(
-                        f"http://212.47.253.51:8335/olof/workon/{projname}"
-                    ),
-                    workon.StartProcess(cmdline.split()),
-                ]
-                got = workon.parse([projname], user="olof", read_config=read_rescue_ini)
-                self.assertEqual(expected, got)
-
--}
-"""
+-- TODO: support / at end of config.server
