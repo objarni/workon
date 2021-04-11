@@ -67,9 +67,9 @@ parse [ projectName, "--create" ] username readConfig = case readConfig projectN
 
 parse [ projectName ] user readConfig = case readConfig projectName of
   Nothing -> [ Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!" ]
-  Just s ->
+  Just config ->
     [ Print $ "Working on " <> projectName <> ". Command line: goland rescue"
-    , SetHeartbeatUrl $ "http://212.47.253.51:8335/" <> user <> "/workon/" <> projectName
+    , SetHeartbeatUrl $ config.server <> "/" <> user <> "/workon/" <> projectName
     , StartProcess [ "goland", "/path/to/my project/" ]
     ]
 
@@ -157,7 +157,7 @@ main =
             ( { username: _, projectName: _, server: _ }
                 <$> [ "olof", "samuel" ]
                 <*> [ "rescue", "polarbear" ]
-                <*> [ "http://212.47.253.51:8335"  ]
+                <*> [ "http://212.47.253.51:8335", "http://212.47.253.51:8080"  ]
             ) \{ username, projectName, server } -> do
             it ("runs client with config: server " <> server <> ", project " <> projectName <> ", user " <> username) do
               let
