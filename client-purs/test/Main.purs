@@ -95,14 +95,14 @@ main =
               expected = [ Print "Usage: workon <projname>" ]
 
               readConfig _ = Nothing
-            parse ([]::CommandLine) ("olof" :: User) readConfig `shouldEqual` expected
+            parse ([] :: CommandLine) ("olof" :: User) readConfig `shouldEqual` expected
           for_ [ "rescue", "polarbear" ] \projectName -> do
             it ("prints error message when config cannot be found for " <> projectName) do
               let
                 expected = [ Print $ "Did not find '" <> projectName <> ".ini'. Re-run with flag --create to create a default!" ]
 
                 readConfig _ = Nothing
-              parse ([ projectName ]::CommandLine) ("olof"::User) readConfig `shouldEqual` expected
+              parse ([ projectName ] :: CommandLine) ("olof" :: User) readConfig `shouldEqual` expected
           it "prints error message when user writes create without project name" do
             let
               expected = [ Print "Create what? --create by itself makes no sense..." ]
@@ -115,7 +115,7 @@ main =
                 expected = [ Print $ "'" <> projectName <> ".ini' already exists, cannot create!" ]
 
                 readConfig _ = exampleConfig
-              parse ([ "--create", projectName ]::CommandLine) ("samuel"::User) readConfig `shouldEqual` expected
+              parse ([ "--create", projectName ] :: CommandLine) ("samuel" :: User) readConfig `shouldEqual` expected
           for_
             ( { username: _, projectName: _, reverseCmdLine: _ }
                 <$> [ "samuel", "tor" ]
