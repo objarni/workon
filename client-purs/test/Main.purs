@@ -127,7 +127,7 @@ main =
                 readConfig _ = exampleConfig
               parse cmdLine user readConfig `shouldEqual` expected
           for_
-            ( (\username projectName reverseCmdLine -> { username, projectName, reverseCmdLine })
+            ( { username: _, projectName: _, reverseCmdLine: _ }
                 <$> [ "samuel", "tor" ]
                 <*> [ "ijpurs", "polarbear" ]
                 <*> [ true, false ]
