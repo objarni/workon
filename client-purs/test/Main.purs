@@ -70,7 +70,7 @@ parse [ projectName ] user readConfig = case readConfig projectName of
   Just s ->
     [ Print $ "Working on " <> projectName <> ". Command line: goland rescue"
     , SetHeartbeatUrl $ "http://212.47.253.51:8335/" <> user <> "/workon/" <> projectName
-    , StartProcess [ "goland", "/home/olof/github/rescue" ]
+    , StartProcess [ "goland", "/path/to/my project/" ]
     ]
 
 parse _ _ _ = [ Print "Usage: workon <projname>" ]
@@ -164,7 +164,7 @@ main =
                 expected =
                   [ Print $ "Working on " <> projectName <> ". Command line: goland rescue"
                   , SetHeartbeatUrl $ server <> "/" <> username <> "/workon/" <> projectName
-                  , StartProcess [ "goland", "/home/olof/github/rescue" ]
+                  , StartProcess [ "goland", "/path/to/my project/" ]
                   ]
 
                 cmdLine = [ projectName ]
