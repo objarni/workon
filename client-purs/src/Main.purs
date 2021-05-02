@@ -8,9 +8,11 @@ import Node.Process
 import Lib
 import Data.Maybe
 
+configReader :: Projectname -> Maybe Config
+configReader _ = Nothing
+
 main :: Effect Unit
 main = do
   toParse <- argv
-  let configReader = \_ -> Nothing
   let parsed = parse toParse "samuel" configReader
   log $ show parsed
