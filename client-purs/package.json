@@ -3,7 +3,7 @@
     "spago": "spago",
     "format": "purty src/Main.purs --write",
     "lci": "spago test --watch --clear-screen",
-    "start": "spago run -a --create -a rescue"
+    "start": "spago run -a --create -a polarbear"
   },
   "devDependencies": {
     "purescript": "^0.14.0",

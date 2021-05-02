@@ -7,6 +7,7 @@ You can edit this file as you like.
   [ "console"
   , "effect"
   , "foldable-traversable"
+  , "node-fs"
   , "node-process"
   , "psci-support"
   , "spec"
