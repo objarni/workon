@@ -14,6 +14,7 @@ import Node.Encoding
 configReader :: Projectname -> Maybe Config
 configReader _ = Nothing
 
+eval :: WorkonEffect -> Effect Unit
 eval (Print s) = log s
 eval (CreateFile name lines) = writeTextFile UTF8 name content
   where content = intercalate "\n" lines <> "\n"
