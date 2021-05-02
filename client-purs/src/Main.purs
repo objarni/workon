@@ -15,4 +15,6 @@ main :: Effect Unit
 main = do
   toParse <- argv
   let parsed = parse toParse "samuel" configReader
-  log $ show parsed
+  case parsed of
+    [Print s] -> log s
+    _ -> log $ show parsed
