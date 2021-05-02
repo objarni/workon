@@ -2,7 +2,8 @@
   "scripts": {
     "spago": "spago",
     "format": "purty test/Main.purs --write",
-    "lci": "spago test --watch --clear-screen"
+    "lci": "spago test --watch --clear-screen",
+    "start": "spago run -a 123"
   },
   "devDependencies": {
     "purescript": "^0.14.0",
